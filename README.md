@@ -5,6 +5,8 @@
 
 本项目实现了一个基于muduo网络库+Protobuf的分布式网络通信框架mprpc。传输层采用基于事件驱动和事件回调的epoll+线程池管理每一个TCP连接，也即muduo高性能网络库。
 
+**项目开发由业务驱动框架开发**
+
 Enjoy it，it's gonna be really fun!!!
 
 ## 项目环境
@@ -13,14 +15,11 @@ Enjoy it，it's gonna be really fun!!!
 - Complier: g++ 5.4.0
 - Tools: CMake/VScode
 - protobuf 3.0
-- 
+- muduo
 
 ## 技术栈
 * RPC远程过程调用原理以及实现
 * Protobuf数据序列化和反序列化协议
-```
-数据序列化和反序列化
-```
 * ZooKeeper分布式一致性协调服务应用以
 * muduo网络库编程
 * conf配置文件读取

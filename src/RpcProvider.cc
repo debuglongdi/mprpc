@@ -1,5 +1,7 @@
 #include "RpcProvider.h"
 
+using namespace mprpc;
+
 void RpcProvider::notifyService(google::protobuf::Service *service)
 {
 

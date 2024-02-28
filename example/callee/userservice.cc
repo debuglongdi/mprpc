@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
-#include "../user.pb.h"
+#include "user.pb.h"
+#include "MprpcApplication.h"
+#include "RpcProvider.h"
 /**
  * UserService原来是一个本地服务，提供了两个进程内的本地方法，Login和GetFriendLists
 */
+
+using namespace mprpc;
 class UserService : public fixbug::UserServiceRpc //rpc服务提供者
 {
 public:
@@ -44,3 +48,18 @@ public:
 private:
 
 };
+
+int main(int argc, char **argv)
+{
+    // 1、框架的初始化操作
+    MprpcApplication::init(argc, argv);
+    
+    //2、使用框架发布服务:将UserService发布rpc节点上
+    RpcProvider provider;
+    provider.notifyService(new UserService);
+    // provider.notifyService(new OtherService);
+
+    //3.启动一个rpc发布节点;run后，程序阻塞等待远程rpc调用请求
+    provider.run();
+
+}

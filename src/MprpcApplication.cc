@@ -1,6 +1,6 @@
 #include "MprpcApplication.h"
 
-
+using namespace mprpc;
 void MprpcApplication::init(int argc, char **argv)
 {
 
