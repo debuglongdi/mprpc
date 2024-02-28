@@ -249,7 +249,7 @@ service UserServiceRpc
 
 ## mprpc框架设计
 
-###
+### 
 ###
 ###
 ###
@@ -259,3 +259,21 @@ service UserServiceRpc
 
 
 ## Zookeeper分布式协调服务
+
+
+## 问题
+
+### 编译问题
+
+```shell
+# aux新增加文件后，不会将其加入到makefile中，需要cmake“清理所有项目的重新配置”
+aux_source_directory(. SRC_LIST)
+```
+
+```
+如果编译时依赖两个库A B，并且A库依赖B库
+
+那么编译项目链接时的顺序:  -lA -lB
+```
+
+### 其他问题

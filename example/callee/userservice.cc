@@ -7,6 +7,7 @@
  * UserService原来是一个本地服务，提供了两个进程内的本地方法，Login和GetFriendLists
 */
 
+//库的namespace
 using namespace mprpc;
 class UserService : public fixbug::UserServiceRpc //rpc服务提供者
 {
