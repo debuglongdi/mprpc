@@ -293,7 +293,17 @@ zookeeperport=8809
 
 ```
 
-### 
+### MprpcChannel.cc
+
+```
+继承基类
+class MprpcChannel : public ::google::protobuf::RpcChannel
+并实现
+MprpcChannel::CallMethod() override;
+
+这样调用者
+
+```
 ###
 ###
 ###

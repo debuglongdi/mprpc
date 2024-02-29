@@ -37,8 +37,8 @@ public:
         
         //2.把响应写入response，包括：错误码，错误消息，返回值，
         fixbug::ResultCode *code = response->mutable_result();
-        code->set_errcode(0);
-        code->set_errmsg("");
+        code->set_errcode(125);
+        code->set_errmsg("sb you wrong\n");
         response->set_success(ret);
         
         //4.执行回调,将响应数据序列化，使用网络发送，由框架完成
