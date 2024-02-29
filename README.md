@@ -305,7 +305,22 @@ MprpcChannel::CallMethod() override;
 这样调用者只需要使用UserService_Stub 就可以访问rpc方法
 
 ```
-###
+### RpcControl.cc
+```
+携带一些Rpc执行过程中的状态信息
+继承public ::google::protobuf::RpcController
+class MprpcController : public ::google::protobuf::RpcController;
+
+实现下面的虚函数
+void Reset() override;
+bool Failed() const override;
+std::string ErrorText() const override;
+void StartCancel() override;
+void SetFailed(const std::string& reason) override;
+bool IsCanceled() const override;
+void NotifyOnCancel(::google::protobuf::Closure* callback) override;
+```
+
 ###
 ###
 
