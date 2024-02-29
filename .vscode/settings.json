@@ -62,6 +62,7 @@
         "sstream": "cpp",
         "cinttypes": "cpp",
         "typeindex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "syncstream": "cpp"
     }
 }

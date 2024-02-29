@@ -202,7 +202,7 @@ service UserServiceRpc
 
 ### message
 ```
-message 定义的类对象，可以将参数以及返回值序列化和反序列换
+message 定义的类对象，可以将参数以及返回值序列化和反序列化
 //字符串可以用bytes来定义，因为protobuf底层就是用bytes,这样就不用转换了
 ```
 
@@ -295,13 +295,14 @@ zookeeperport=8809
 
 ### MprpcChannel.cc
 
+*本框架只需要实现 MprpcChannel::CallMethod()*
 ```
 继承基类
 class MprpcChannel : public ::google::protobuf::RpcChannel
 并实现
 MprpcChannel::CallMethod() override;
 
-这样调用者
+这样调用者只需要使用UserService_Stub 就可以访问rpc方法
 
 ```
 ###
