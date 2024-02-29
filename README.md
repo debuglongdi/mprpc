@@ -239,7 +239,19 @@ service UserServiceRpc
 ```
 1、定义.proto文件并生成c++代码
 2、对要提供的服务，继承.proto中定义的service,并重写proto中定义的rpc方法
-3、
+    在其中 解析请求request，用request中参数执行本地方法，将返回值填写到response，执行回调done->Run()它会使用框架发送结果给调用者
+3、在main（）中需要执行3步：
+    // 1、框架的初始化操作
+    MprpcApplication::init(argc, argv);
+    
+    //2、使用框架发布服务:将UserService发布到rpc节点上
+    RpcProvider provider;
+    provider.notifyService(new UserService);
+    // provider.notifyService(new OtherService);
+
+    //3.启动一个rpc发布节点;run后，程序阻塞等待远程rpc调用请求
+    provider.run();
+
 ```
 
 
@@ -249,9 +261,39 @@ service UserServiceRpc
 
 ## mprpc框架设计
 
+### MprpcApplication.cc
+* 读取配置文件
+```shell
+#rpc节点
+rpcserverip=127.0.0.1
+rpcserverport=8808
+
+#zookeeper节点
+zookeeperip=127.0.0.1
+zookeeperport=8809
+```
+
+### RpcProvider.cc
+####　建立服务器以及提供发布服务的notifyService
+* 1、RpcProvider::run() 方法
+读取配置参数（ip:port）：使用muduo网络库建立rpc服务节点，最后开启事件循环
+
+* 2、RpcProvider::notifyService(::google::protobuf::Service *)
+用户发布本地服务为rpc服务
+```
+所以它必须提供一个表，上面记录了每一个rpc服务对象发布了哪些方法
+```
+#### rpc服务分发
+* 3、onConnection()&&&onMessage()
+```
+使用muduo网络库将网络收发数据与业务，分离，开发者只需有关注业务层
+```
+
+```
+
+```
+
 ### 
-###
-###
 ###
 ###
 ###
@@ -276,4 +318,5 @@ aux_source_directory(. SRC_LIST)
 那么编译项目链接时的顺序:  -lA -lB
 ```
 
+* 开发框架不能依赖具体的类
 ### 其他问题

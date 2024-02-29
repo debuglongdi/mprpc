@@ -3,7 +3,7 @@ project(mprpc CXX)
 # 设置调试信息 以及启动c++11语言标准
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-# 设置Debug、Release构建类型的编译选项
+# 设置Debug、Release构建类型的编译选项,如果将项目编译成动态库，并且项目又使用了静态库，那就需要在编译选项中加-fPIC
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -Wall -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -Wall -std=c++11")
 
