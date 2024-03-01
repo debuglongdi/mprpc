@@ -1,6 +1,7 @@
 #include "RpcProvider.h"
 #include "MprpcApplication.h"
 #include "rpcheader.pb.h"
+#include "zookeeperutils.h"
 
 using namespace mprpc;
 
@@ -53,7 +54,31 @@ void RpcProvider::run()
     // 设置muudo库的线程数量，work工作线程
     server.setThreadNum(3);
 
+    //把当前rpc节点上的要发布的服务的地址注册到zk上面，让rpc client 可以从zk上发现服务
+    ZkClient zkCli;
+    zkCli.start();
+
+    //service_name 为永久性节点 method_name为临时节点，有多个
+    for(auto &sp : serviceMap_)
+    {
+        std::string service_path = "/"+sp.first;
+        zkCli.create(service_path.c_str(), nullptr, 0);
+        for(auto &mp : sp.second.m_methodMap)
+        {
+            //当前节点存储该方法所在服务 "ip:port"
+            std::string method_path = service_path + "/" + mp.first;
+            char method_path_data[128] = {0};
+            sprintf(method_path_data,"%s:%d",ip.c_str(),port);
+            zkCli.create(method_path.c_str(), method_path_data, strlen(method_path_data), ZOO_EPHEMERAL);
+
+        }
+    }// END ZkCli
+
+
+
+
     std::cout << "RpcProvider start serveic at ip:" << ip << " port:" << port << std::endl;
+    //启动网络服务
     server.start();
     // mainReactor 接受连接，阻塞在这里
     eventLoop_.loop();

@@ -11,6 +11,7 @@
 #include "MprpcChannel.h"
 #include "rpcheader.pb.h"
 #include "MprpcApplication.h"
+#include "zookeeperutils.h"
 // #include "MprpcController.h"
 
 
@@ -99,19 +100,41 @@ void MprpcChannel::CallMethod(const google::protobuf::MethodDescriptor* method,
         controller->SetFailed(err);
         return;
     }
+    //获取ip地址和端口号，改为从zookeeper服务上查询
+    //std::string ip = MprpcApplication::getInstance().getConfig().Load("rpcserverip").c_str();
+    //std::string port = MprpcApplication::getInstance().getConfig().Load("rpcserverport");
+    
+    ///在zk上查询rpc服务对象的rpc方法的地址
+    ZkClient zCli;
+    zCli.start();
+    std::string path = "/" + service_name + "/" + method_name;
+    std::string url = zCli.getData(path.c_str());
+
+    if(url == "")
+    {
+        char err[512] = {0};
+        sprintf(err,"can't find rpc %s/%s on zookeeper",service_name.c_str(),method_name.c_str());
+        controller->SetFailed(err);
+        return;
+    }
+    int idx = url.find(":");
+    if(idx == -1)
+    {
+        controller->SetFailed(" address is invalid!");
+        return;
+    }
+    std::string ip = url.substr(0,idx);
+    std::string port = url.substr(idx+1,url.size()-idx);
+
     struct sockaddr_in server_address;
     //2 设置服务端地址、端口等信息
     memset(&server_address, 0, sizeof(server_address));
     server_address.sin_family = AF_INET; 
-    server_address.sin_port = htobe16(stoi(MprpcApplication::getInstance().getConfig().Load("rpcserverport")));
-    ::inet_pton(AF_INET, MprpcApplication::getInstance().getConfig().Load("rpcserverip").c_str(), &server_address.sin_addr);
+    server_address.sin_port = htobe16(stoi(port));
+    ::inet_pton(AF_INET, ip.c_str(), &server_address.sin_addr);
     socklen_t addrlen= sizeof(server_address);
 
-
-    std::cout<<"rpcip="<<server_address.sin_addr.s_addr<<std::endl;
-    std::cout<<"rpcport="<<server_address.sin_port<<std::endl;
-
-
+    std::cout<<"try to connect to rpc://"<<ip<<":"<<port<<" with tcp"<<std::endl;
     //3、建立连接,其实可以多尝试几次
     if(::connect(clientfd, (const struct sockaddr *)&server_address, addrlen) != 0)
     {

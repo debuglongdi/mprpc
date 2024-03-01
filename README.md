@@ -327,7 +327,79 @@ void NotifyOnCancel(::google::protobuf::Closure* callback) override;
 
 
 ## Zookeeper分布式协调服务
+* 简介
+```
+它有许多功能：
+1、分布式环境中的全局命名服务
+2、服务注册中心
+3、全局分布式锁
+```
 
+* 安装后在conf中设置dataDir的路径
+* 然后在安装目录启动：./zkServer.sh [start|stop|...]
+* 然后可以使用其提供的./zkCli.sh
+
+### zk数据怎么组织的 znoode 节点
+* znode结构
+![alt text](img/znode.png)
+```
+每一个节点可以携带1MB数据，可以修改
+节点分为两种：zk规定注册到它上面的节点必须给它发送心跳信息
+    临时性节点:如果超时未发送，则该节点会被zk删除
+    永久性节点：如果超时未发送心跳信息，该节点不会被删除
+```
+**心跳消息：用于检测和维持网络连接的活跃性**
+
+* 常用命令：
+```
+这些命令都必须指出绝对路径
+ls get create set delete
+```
+
+
+
+### zk的watcher机制
+通知回调机制
+
+
+**编译原生c+++API接口**
+```
+cd src/c
+sudo ./configure
+sudo make
+sudo make install
+```
+3.4.10
+* 编译zk的源码时，有错误
+```
+src/c/src/zookeeper.c  3469
+src/c/src/cli.c 559
+```
+* api缺点
+
+```
+//1、没有实现心跳，必须自己实现 错误的会在1/3 timeout发布
+2、监听wathcher只通知一次就失效，每次接受后都需要再注册watcher
+3、znode节点只存储bytes字节数组，如果存储对象需要自己序列化
+```
+库：
+```
+zookeeper_mt 多线程
+zookeeper_st 单线程
+```
+
+```c++
+
+```
+
+
+## 常用命令
+
+```shell
+ps -ef | grep <name>
+
+netstat -tanp | grep <name>
+```
 
 ## 问题
 
@@ -344,5 +416,31 @@ aux_source_directory(. SRC_LIST)
 那么编译项目链接时的顺序:  -lA -lB
 ```
 
+```
+安装库后记得
+sudo ldconfig
+```
+
 * 开发框架不能依赖具体的类
 ### 其他问题
+
+* 项目运行的步骤
+```
+1.使用动态库的话，需要先安装：muduo库，google::protobuf库，以及zookeeper库
+//使用静态库的话就不需要安装这些库，但是必须安装zookeeper
+2.安装zookeeper 并运行它监听的端口必须与配置文件中一致
+3.必须配置为整个项目配置一个主zookeeper节点，然后每一个使用框架发布rpc方法的服务端可以定义自己发布的服务所在的ip:port
+
+#rpc节点
+rpcserverip=127.0.0.1
+rpcserverport=8808
+
+#zookeeper节点
+zookeeperip=127.0.0.1
+zookeeperport=2181
+
+//然后就可按example/中的示例来使用本：rpc分布式框架
+```
+
+* 实现对框架传输数据加密
+* 
