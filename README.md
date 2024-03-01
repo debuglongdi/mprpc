@@ -1,7 +1,7 @@
 # mprpc分布式网络通信框架
 
 
-## 简介
+## 1.简介
 
 本项目实现了一个基于muduo网络库+Protobuf的分布式网络通信框架mprpc。传输层采用基于事件驱动和事件回调的epoll+线程池管理每一个TCP连接，也即muduo高性能网络库。
 
@@ -9,7 +9,7 @@
 
 Enjoy it，it's gonna be really fun!!!
 
-## 项目环境
+## 2.项目环境
 
 - OS: Ubuntu 20.04
 - Complier: g++ 5.4.0
@@ -17,7 +17,7 @@ Enjoy it，it's gonna be really fun!!!
 - protobuf 3.0
 - muduo
 
-## 技术栈
+## 3.技术栈
 * RPC远程过程调用原理以及实现
 * Protobuf数据序列化和反序列化协议
 * ZooKeeper分布式一致性协调服务应用以
@@ -27,7 +27,7 @@ Enjoy it，it's gonna be really fun!!!
 * CMake构建项目集成编译环境
 * github管理项目
 
-## 基础知识点
+## 4.基础知识点
 
 ### 集群和分布式理论
 
@@ -101,7 +101,7 @@ RPC (Remote Procedure Call Protocol):远程过程调用协议
 2、protobuf的序列化和反序列化速度快。
 
 
-## 环境配置以及使用
+## 5.环境配置以及使用
 
 ### 项目目录
 ```shell
@@ -259,9 +259,9 @@ service UserServiceRpc
 
 
 
-## mprpc框架设计
+## 6.mprpc框架设计
 
-### MprpcApplication.cc
+### 6.1 MprpcApplication.cc
 * 读取配置文件
 ```shell
 #rpc节点
@@ -273,7 +273,7 @@ zookeeperip=127.0.0.1
 zookeeperport=8809
 ```
 
-### RpcProvider.cc
+### 6.2 RpcProvider.cc
 ####　建立服务器以及提供发布服务的notifyService
 * 1、RpcProvider::run() 方法
 读取配置参数（ip:port）：使用muduo网络库建立rpc服务节点，最后开启事件循环
@@ -293,7 +293,7 @@ zookeeperport=8809
 
 ```
 
-### MprpcChannel.cc
+### 6.3 MprpcChannel.cc
 
 *本框架只需要实现 MprpcChannel::CallMethod()*
 ```
@@ -305,7 +305,7 @@ MprpcChannel::CallMethod() override;
 这样调用者只需要使用UserService_Stub 就可以访问rpc方法
 
 ```
-### RpcControl.cc
+### 6.4 RpcControl.cc
 ```
 携带一些Rpc执行过程中的状态信息
 继承public ::google::protobuf::RpcController
@@ -321,12 +321,20 @@ bool IsCanceled() const override;
 void NotifyOnCancel(::google::protobuf::Closure* callback) override;
 ```
 
-###
-###
+### 6.5 异步日志
+
+```
+多个线程向缓冲区队列queue写入日志,一个I/O线程负责将日志写入磁盘。
+```
+**考虑queue的线程安全,有如下两种方法:**
+* 1.使用互斥锁
+* 2.使用无锁队列
+* 3.考虑直接使用kafaka异步消息队列
 
 
 
-## Zookeeper分布式协调服务
+
+## 7.Zookeeper分布式协调服务
 * 简介
 ```
 它有许多功能：

@@ -3,6 +3,8 @@
 #include "user.pb.h"
 #include "MprpcApplication.h"
 #include "RpcProvider.h"
+#include "Logger.h"
+
 /**
  * UserService原来是一个本地服务，提供了两个进程内的本地方法，Login和GetFriendLists
 */
@@ -52,6 +54,8 @@ private:
 
 int main(int argc, char **argv)
 {
+    LOG_INFO("fist info");
+    LOG_ERROR("%s:%s:%d",__FILE__, __FUNCTION__, __LINE__);
     // 1、框架的初始化操作
     MprpcApplication::init(argc, argv);
     
